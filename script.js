@@ -17,9 +17,15 @@ let name = localStorage.getItem("NAME");
 
 // check if data is not empty 
 if (data) {
-    LIST = JSON.parse(data);
-    id = LIST.length;
-    LoadList(name, LIST);
+    try {
+        LIST = JSON.parse(data);
+        id = LIST.length;  // Correctly set the id
+        LoadList(name, LIST);  // Load list if data exists
+    } catch (error) {
+        console.error("Error parsing localStorage data", error);
+        LIST = [];
+        id = 0;
+    }
 } else {
     LIST = [];
     id = 0;
@@ -31,7 +37,7 @@ if (name) {
 
 // load items to the user interface
 function LoadList(name, array) {
-    listTitle.value = name;
+    if (name) listTitle.value = name;  // Ensure name exists
     array.forEach(function (item) {
         addToDo(item.name, item.id, item.done, item.trash);
     });
@@ -53,9 +59,9 @@ function addToDo(toDo, id, done, trash) {
 
     const item = `
         <li class="item">
-          <i class="far ${DONE}" job="complete" id="${id}"></i>
+          <i class="far ${DONE}" job="complete" data-id="${id}"></i>
           <p class="text ${LINE}">${toDo}</p>
-          <i class="fas fa-trash-alt" job="delete" id="${id}"></i>
+          <i class="fas fa-trash-alt" job="delete" data-id="${id}"></i>
         </li>
     `;
     const position = "beforeend";
@@ -64,8 +70,8 @@ function addToDo(toDo, id, done, trash) {
 
 // add an item to the list when user hit enter key
 document.addEventListener("keyup", function (event) {
-    if (event.keyCode == 13) {
-        const toDo = input.value;
+    if (event.key === "Enter") {
+        const toDo = input.value.trim();
 
         // if the input isn't empty
         if (toDo) {
@@ -80,7 +86,7 @@ document.addEventListener("keyup", function (event) {
 
             id++;
 
-            // add item from localstorage
+            // add item to localStorage
             localStorage.setItem("TODO", JSON.stringify(LIST));
         }
         input.value = "";
@@ -93,31 +99,44 @@ function completeToDo(element) {
     element.classList.toggle(UNCHECK);
     element.parentNode.querySelector(".text").classList.toggle(LINE_THROUGH);
 
-    LIST[element.id].done = LIST[element.id].done ? false : true;
+    LIST[element.dataset.id].done = !LIST[element.dataset.id].done;  // Toggle
 }
 
 // remove to do
 function removeToDo(element) {
-    element.parentNode.parentNode.removeChild(element.parentNode);
+    element.parentNode.remove();  // Simply remove the parent
 
-    LIST[element.id].trash = true;
+    LIST[element.dataset.id].trash = true;  // Mark as trash
 }
 
 // target the items created dynamically
 list.addEventListener("click", function (event) {
     const element = event.target; // return the clicked element inside the list
-    const elementJob = element.attributes.job.value; // complete or delete
+    if (element.attributes.job) {
+        const elementJob = element.attributes.job.value; // complete or delete
 
-    if (elementJob == "complete") {
-        completeToDo(element);
-    } else if (elementJob == "delete") {
-        removeToDo(element);
+        if (elementJob === "complete") {
+            completeToDo(element);
+        } else if (elementJob === "delete") {
+            removeToDo(element);
+        }
+
+        // add item to localStorage
+        localStorage.setItem("TODO", JSON.stringify(LIST));
     }
-
-    // add item from localstorage
-    localStorage.setItem("TODO", JSON.stringify(LIST));
 });
 
 listTitle.addEventListener("change", function () {
     localStorage.setItem("NAME", listTitle.value.trim());
 });
+// console.log(
+//     "%c Designed and Developed by Xcriminal. ",
+//     "background-image: linear-gradient(70deg, #F5F5F5, #229799); color: Black;font-weight:900;font-size:1rem; padding:20px;"
+// );
+console.log("%c Designed and Developed by Aman Singh. ", "background-image: linear-gradient(70deg, #F5F5F5, #229799); color: Black;font-weight:900;font-size:1rem; padding:20px;");
+console.log("%c ██╗  ██╗ ██████╗██████╗ ██╗███╗   ███╗██╗███╗   ██╗ █████╗ ██╗     ", "color: #229799;");
+console.log("%c ╚██╗██╔╝██╔════╝██╔══██╗██║████╗ ████║██║████╗  ██║██╔══██╗██║     ", "color: #229799;");
+console.log("%c  ╚███╔╝ ██║     ██████╔╝██║██╔████╔██║██║██╔██╗ ██║███████║██║     ", "color: #229799;");
+console.log("%c  ██╔██╗ ██║     ██╔══██╗██║██║╚██╔╝██║██║██║╚██╗██║██╔══██║██║     ", "color: #229799;");
+console.log("%c ██╔╝ ██╗╚██████╗██║  ██║██║██║ ╚═╝ ██║██║██║ ╚████║██║  ██║███████╗", "color: #229799;");
+console.log("%c ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝", "color: #229799;");
