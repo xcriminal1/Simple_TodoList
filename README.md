@@ -1,4 +1,4 @@
-![Main]([image-url](https://github.com/xcriminal1/Simple_TodoList/blob/master/image.png))
+![Alt text](https://github.com/xcriminal1/Simple_TodoList/blob/master/image.png)
 
 # Simple To-Do List Application
 ## This project is a basic To-Do List built using HTML, CSS, and JavaScript. It allows users to add, delete, and mark tasks as completed.
